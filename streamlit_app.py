@@ -28,50 +28,61 @@ def string_similarity(ref, sent):
     return util.pytorch_cos_sim(ref_embeddings, sent_embeddings).item()
 
 
-add_reply_button = st.button('Add more replies')
-recompute_button = st.button('Recompute scores')
+num_replies = st.slider('Select the number of replies:', 0, 20, 5)
 
-if 'replies' not in st.session_state:
-    st.session_state['replies'] = [st.text_input('Enter reply #1:')]
+replies = []
+score_containers = []
+for idx in range(num_replies):
+    replies.append(st.text_input('Enter reply  # {}:'.format(len(replies) + 1)))
+    score_containers.append(st.empty())
+    score_containers[-1].text('-')
 
-if 'score_containers' not in st.session_state:
-    st.session_state['score_containers'] = [st.empty()]
-    st.session_state['score_containers'][0].text('-')
+# add_reply_button = st.button('Add more replies')
+recompute_button = st.button('Compute scores')
+
+# if 'replies' not in st.session_state:
+#     st.session_state['replies'] = [st.text_input('Enter reply #1:')]
+#
+# if 'score_containers' not in st.session_state:
+#     st.session_state['score_containers'] = [st.empty()]
+#     st.session_state['score_containers'][0].text('-')
 
 # replies = [st.text_input('Enter reply #1:')]
 # score_containers = [st.empty()]
 # score_containers[0].text('-')
 
-if add_reply_button:
-    for idx in range(len(st.session_state['replies'])):
-        if idx == 0:
-            continue
-        scores = []
-        for reply in st.session_state['replies'][:idx]:
-            scores.append(string_similarity(reply, st.session_state['replies'][idx]))
-        avg_score = np.mean(scores)
-        st.session_state['score_containers'][idx].empty()
-        st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
-
-    st.session_state['replies'].append(st.text_input('Enter reply #{}:'.format(len(st.session_state['replies']) + 1)))
-    st.write(len(st.session_state['replies']))
-    st.session_state['score_containers'].append(st.empty())
-    st.session_state['score_containers'][-1].text('-')
+# if add_reply_button:
+#     for idx in range(len(st.session_state['replies'])):
+#         if idx == 0:
+#             continue
+#         scores = []
+#         for reply in st.session_state['replies'][:idx]:
+#             scores.append(string_similarity(reply, st.session_state['replies'][idx]))
+#         avg_score = np.mean(scores)
+#         st.session_state['score_containers'][idx].empty()
+#         st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
+#
+#
+#
+#     st.session_state['replies'].append(st.text_input('Enter reply #{}:'.format(len(st.session_state['replies']) + 1)))
+#     st.write(len(st.session_state['replies']))
+#     st.session_state['score_containers'].append(st.empty())
+#     st.session_state['score_containers'][-1].text('-')
     # del add_reply_button
     # add_reply_button = st.form_submit_button('+')
     # del recompute_button
     # recompute_button = st.form_submit_button('Recompute scores')
 
-    if recompute_button:
-        for idx in range(len(st.session_state['replies'])):
-            if idx == 0:
-                continue
-            scores = []
-            for reply in st.session_state['replies'][:idx]:
-                scores.append(string_similarity(reply, st.session_state['replies'][idx]))
-            avg_score = np.mean(scores)
-            st.session_state['score_containers'][idx].empty()
-            st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
+if recompute_button:
+    for idx in range(len(replies)):
+        if idx == 0:
+            continue
+        scores = []
+        for reply in replies[:idx]:
+            scores.append(string_similarity(reply, replies[idx]))
+        avg_score = np.mean(scores)
+        score_containers[idx].empty()
+        score_containers[idx].text('Average context score: ' + str(avg_score))
 
 
 # # user form
