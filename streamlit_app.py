@@ -27,33 +27,31 @@ def load_sentence_transformers_model():
 with st.spinner(text='In progress'):
     model = load_sentence_transformers_model()
 
-# user form
-with st.form(key='sentence_transformers_form'):
-    add_reply_button = st.form_submit_button('Add more replies')
-    recompute_button = st.form_submit_button('Recompute scores')
-    replies = [st.text_input('Enter reply #1:')]
-    score_containers = [st.empty()]
-    score_containers[0].text('-')
 
-    # on form submission
-    if add_reply_button:
-        for idx in range(len(replies)):
-            if idx == 0:
-                continue
-            scores = []
-            for reply in replies[:idx]:
-                scores.append(string_similarity(reply, replies[idx]))
-            avg_score = np.mean(scores)
-            score_containers[idx].empty()
-            score_containers[idx].text('Average context score: ' + str(avg_score))
+add_reply_button = st.button('Add more replies')
+recompute_button = st.button('Recompute scores')
+replies = [st.text_input('Enter reply #1:')]
+score_containers = [st.empty()]
+score_containers[0].text('-')
 
-        replies.append(st.text_input('Enter reply #{}:'.format(len(replies) + 1)))
-        score_containers.append(st.empty())
-        score_containers[-1].text('-')
-        # del add_reply_button
-        # add_reply_button = st.form_submit_button('+')
-        # del recompute_button
-        # recompute_button = st.form_submit_button('Recompute scores')
+if add_reply_button:
+    for idx in range(len(replies)):
+        if idx == 0:
+            continue
+        scores = []
+        for reply in replies[:idx]:
+            scores.append(string_similarity(reply, replies[idx]))
+        avg_score = np.mean(scores)
+        score_containers[idx].empty()
+        score_containers[idx].text('Average context score: ' + str(avg_score))
+
+    replies.append(st.text_input('Enter reply #{}:'.format(len(replies) + 1)))
+    score_containers.append(st.empty())
+    score_containers[-1].text('-')
+    # del add_reply_button
+    # add_reply_button = st.form_submit_button('+')
+    # del recompute_button
+    # recompute_button = st.form_submit_button('Recompute scores')
 
     if recompute_button:
         for idx in range(len(replies)):
@@ -65,6 +63,46 @@ with st.form(key='sentence_transformers_form'):
             avg_score = np.mean(scores)
             score_containers[idx].empty()
             score_containers[idx].text('Average context score: ' + str(avg_score))
+
+
+# # user form
+# with st.form(key='sentence_transformers_form'):
+#     add_reply_button = st.form_submit_button('Add more replies')
+#     recompute_button = st.form_submit_button('Recompute scores')
+#     replies = [st.text_input('Enter reply #1:')]
+#     score_containers = [st.empty()]
+#     score_containers[0].text('-')
+#
+#     # on form submission
+#     if add_reply_button:
+#         for idx in range(len(replies)):
+#             if idx == 0:
+#                 continue
+#             scores = []
+#             for reply in replies[:idx]:
+#                 scores.append(string_similarity(reply, replies[idx]))
+#             avg_score = np.mean(scores)
+#             score_containers[idx].empty()
+#             score_containers[idx].text('Average context score: ' + str(avg_score))
+#
+#         replies.append(st.text_input('Enter reply #{}:'.format(len(replies) + 1)))
+#         score_containers.append(st.empty())
+#         score_containers[-1].text('-')
+#         # del add_reply_button
+#         # add_reply_button = st.form_submit_button('+')
+#         # del recompute_button
+#         # recompute_button = st.form_submit_button('Recompute scores')
+#
+#     if recompute_button:
+#         for idx in range(len(replies)):
+#             if idx == 0:
+#                 continue
+#             scores = []
+#             for reply in replies[:idx]:
+#                 scores.append(string_similarity(reply, replies[idx]))
+#             avg_score = np.mean(scores)
+#             score_containers[idx].empty()
+#             score_containers[idx].text('Average context score: ' + str(avg_score))
 
 #
 #
