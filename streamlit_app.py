@@ -28,6 +28,9 @@ def string_similarity(ref, sent):
     return util.pytorch_cos_sim(ref_embeddings, sent_embeddings).item()
 
 
+add_reply_button = st.button('Add more replies')
+recompute_button = st.button('Recompute scores')
+
 if 'replies' not in st.session_state:
     st.session_state['replies'] = [st.text_input('Enter reply #1:')]
 
@@ -35,8 +38,6 @@ if 'score_containers' not in st.session_state:
     st.session_state['score_containers'] = [st.empty()]
     st.session_state['score_containers'][0].text('-')
 
-add_reply_button = st.button('Add more replies')
-recompute_button = st.button('Recompute scores')
 # replies = [st.text_input('Enter reply #1:')]
 # score_containers = [st.empty()]
 # score_containers[0].text('-')
