@@ -7,15 +7,8 @@ st.title('Context Matching Demo')
 
 
 # important to initialize the model once and then predict using it while loaded into memory
-model = SentenceTransformer('paraphrase-distilroberta-base-v1', device='cpu')
+# model = SentenceTransformer('paraphrase-distilroberta-base-v1', device='cpu')
 # model = SentenceTransformer('sentence-transformers/paraphrase-distilroberta-base-v1', device='cpu')
-
-
-# the function for computing the string similarity using the model
-def string_similarity(ref, sent):
-    ref_embeddings = model.encode(ref, convert_to_tensor=True)
-    sent_embeddings = model.encode(sent, convert_to_tensor=True)
-    return util.pytorch_cos_sim(ref_embeddings, sent_embeddings).item()
 
 
 @st.cache(allow_output_mutation=True)
@@ -28,41 +21,55 @@ with st.spinner(text='In progress'):
     model = load_sentence_transformers_model()
 
 
+# the function for computing the string similarity using the model
+def string_similarity(ref, sent):
+    ref_embeddings = model.encode(ref, convert_to_tensor=True)
+    sent_embeddings = model.encode(sent, convert_to_tensor=True)
+    return util.pytorch_cos_sim(ref_embeddings, sent_embeddings).item()
+
+
+if 'replies' not in st.session_state:
+    st.session_state['replies'] = [st.text_input('Enter reply #1:')]
+
+if 'score_containers' not in st.session_state:
+    st.session_state['score_containers'] = [st.empty()]
+    st.session_state['score_containers'][0].text('-')
+
 add_reply_button = st.button('Add more replies')
 recompute_button = st.button('Recompute scores')
-replies = [st.text_input('Enter reply #1:')]
-score_containers = [st.empty()]
-score_containers[0].text('-')
+# replies = [st.text_input('Enter reply #1:')]
+# score_containers = [st.empty()]
+# score_containers[0].text('-')
 
 if add_reply_button:
-    for idx in range(len(replies)):
+    for idx in range(len(st.session_state['replies'])):
         if idx == 0:
             continue
         scores = []
-        for reply in replies[:idx]:
-            scores.append(string_similarity(reply, replies[idx]))
+        for reply in st.session_state['replies'][:idx]:
+            scores.append(string_similarity(reply, st.session_state['replies'][idx]))
         avg_score = np.mean(scores)
-        score_containers[idx].empty()
-        score_containers[idx].text('Average context score: ' + str(avg_score))
+        st.session_state['score_containers'][idx].empty()
+        st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
 
-    replies.append(st.text_input('Enter reply #{}:'.format(len(replies) + 1)))
-    score_containers.append(st.empty())
-    score_containers[-1].text('-')
+    st.session_state['replies'].append(st.text_input('Enter reply #{}:'.format(len(st.session_state['replies']) + 1)))
+    st.session_state['score_containers'].append(st.empty())
+    st.session_state['score_containers'][-1].text('-')
     # del add_reply_button
     # add_reply_button = st.form_submit_button('+')
     # del recompute_button
     # recompute_button = st.form_submit_button('Recompute scores')
 
     if recompute_button:
-        for idx in range(len(replies)):
+        for idx in range(len(st.session_state['replies'])):
             if idx == 0:
                 continue
             scores = []
-            for reply in replies[:idx]:
-                scores.append(string_similarity(reply, replies[idx]))
+            for reply in st.session_state['replies'][:idx]:
+                scores.append(string_similarity(reply, st.session_state['replies'][idx]))
             avg_score = np.mean(scores)
-            score_containers[idx].empty()
-            score_containers[idx].text('Average context score: ' + str(avg_score))
+            st.session_state['score_containers'][idx].empty()
+            st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
 
 
 # # user form
