@@ -54,6 +54,7 @@ if add_reply_button:
         st.session_state['score_containers'][idx].text('Average context score: ' + str(avg_score))
 
     st.session_state['replies'].append(st.text_input('Enter reply #{}:'.format(len(st.session_state['replies']) + 1)))
+    st.write(len(st.session_state['replies']))
     st.session_state['score_containers'].append(st.empty())
     st.session_state['score_containers'][-1].text('-')
     # del add_reply_button
