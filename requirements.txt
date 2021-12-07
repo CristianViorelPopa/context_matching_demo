@@ -1,4 +1,4 @@
-language_tool_python
+sentence_transformers
 git+https://github.com/huggingface/transformers
 sentencepiece==0.1.95
 python-Levenshtein==0.12.2
