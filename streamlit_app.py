@@ -38,7 +38,7 @@ with st.spinner(text='In progress'):
 
 num_replies = st.slider('Select the number of replies:', 2, 20, 5)
 num_context_replies = st.slider('Select the number of previous replies considered for the computing the context score:',
-                                1, num_replies - 1, 5)
+                                1, num_replies - 1, min(3, num_replies - 1))
 
 replies = []
 score_containers = []
