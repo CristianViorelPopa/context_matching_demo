@@ -1,5 +1,6 @@
 import streamlit as st
 from sentence_transformers import SentenceTransformer, util
+import numpy as np
 
 
 st.title('Context Matching Demo')
@@ -28,23 +29,43 @@ with st.spinner(text='In progress'):
 
 # user form
 with st.form(key='sentence_transformers_form'):
-    lt_text = st.text_input('Enter your text here:')
-    lt_submit = st.form_submit_button('Find mistakes')
+    replies = [st.text_input('Enter reply #1:')]
+    score_containers = [st.empty()]
+    score_containers[0].text('-')
+    add_reply_button = st.form_submit_button('+')
+    recompute_button = st.form_submit_button('Recompute scores')
 
-#     # on form submission
-#     if lt_submit:
-#         # with st.spinner(text='In progress'):
-#         lt_matches = tool.check(lt_text)
-#         lt_corrected_text = tool.correct(lt_text)
-#
-#         st.success('Done! There were ' + str(len(lt_matches)) + ' mistakes found in the text:')
-#         for idx, match in enumerate(lt_matches):
-#             st.write(str(idx + 1) + '. __' + match.ruleIssueType.upper() + '__: "' + match.message + '"')
-#
-#         st.write('The corrected text is: __"' + lt_corrected_text + '"__')
-#
-#         st.write('The raw output from LanguageTool:')
-#         st.write(lt_matches)
+    # on form submission
+    if add_reply_button:
+        for idx in range(len(replies)):
+            if idx == 0:
+                continue
+            scores = []
+            for reply in replies[:idx]:
+                scores.append(string_similarity(reply, replies[idx]))
+            avg_score = np.mean(scores)
+            score_containers[idx].empty()
+            score_containers[idx].text('Average context score: ' + str(avg_score))
+
+        replies.append(st.text_input('Enter reply #{}:'.format(len(replies) + 1)))
+        score_containers.append(st.empty())
+        score_containers[-1].text('-')
+        del add_reply_button
+        add_reply_button = st.form_submit_button('+')
+        del recompute_button
+        recompute_button = st.form_submit_button('Recompute scores')
+
+    if recompute_button:
+        for idx in range(len(replies)):
+            if idx == 0:
+                continue
+            scores = []
+            for reply in replies[:idx]:
+                scores.append(string_similarity(reply, replies[idx]))
+            avg_score = np.mean(scores)
+            score_containers[idx].empty()
+            score_containers[idx].text('Average context score: ' + str(avg_score))
+
 #
 #
 #
