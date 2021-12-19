@@ -39,6 +39,8 @@ with st.spinner(text='In progress'):
 num_context_replies = st.slider('Select the number of previous replies considered for computing the context score:',
                                 1, 20, 1)
 
+user_turn = st.radio('The user is ...', ('First', 'Second'))
+
 replies_text_area = st.text_area('Enter replies (one per line):', height=275)
 
 recompute_button = st.button('Compute scores')
@@ -48,8 +50,15 @@ if recompute_button:
 
     average_scores = []
     for idx in range(1, len(replies)):
+        # Remember: indexing is offset by 1
+        if user_turn == 'First' and idx % 2 != 0:
+            continue
+        if user_turn == 'Second' and idx % 2 == 0:
+            continue
+
         scores = []
         for reply in replies[:idx][-num_context_replies:]:
+            st.write('Computing for reply #' + str(idx))
             scores.append(string_similarity(reply, replies[idx]))
         average_scores.append(np.mean(scores))
 
