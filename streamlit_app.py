@@ -26,7 +26,6 @@ def string_similarity(ref, sent):
 model_name = st.selectbox(
      'Model used',
      (
-         'distilroberta-v1',
          'paraphrase-distilroberta-base-v1',
          'paraphrase-xlm-r-multilingual-v1',
          'paraphrase-TinyBERT-L6-v2',
