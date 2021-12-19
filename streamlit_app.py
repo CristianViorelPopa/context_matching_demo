@@ -58,7 +58,6 @@ if recompute_button:
 
         scores = []
         for reply in replies[:idx][-num_context_replies:]:
-            st.write('Computing for reply #' + str(idx))
             scores.append(string_similarity(reply, replies[idx]))
         average_scores.append(np.mean(scores))
 
