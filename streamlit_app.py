@@ -51,7 +51,6 @@ if recompute_button:
         scores = []
         for reply in replies[:idx][-num_context_replies:]:
             scores.append(string_similarity(reply, replies[idx]))
-            st.write('Computing score for reply #' + str(idx))
         average_scores.append(np.mean(scores))
 
     st.write('The average score for the entire dialog: ' + str(np.mean(average_scores)))
