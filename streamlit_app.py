@@ -26,6 +26,7 @@ def string_similarity(ref, sent):
 model_name = st.selectbox(
      'Model used',
      (
+         'distilroberta-v1',
          'paraphrase-distilroberta-base-v1',
          'paraphrase-xlm-r-multilingual-v1',
          'paraphrase-TinyBERT-L6-v2',
@@ -36,26 +37,21 @@ model_name = st.selectbox(
 with st.spinner(text='In progress'):
     model = load_sentence_transformers_model(model_name)
 
-num_replies = st.slider('Select the number of replies:', 2, 20, 5)
 num_context_replies = st.slider('Select the number of previous replies considered for computing the context score:',
-                                1, num_replies - 1, min(3, num_replies - 1))
+                                1, 20, 1)
 
-replies = []
-score_containers = []
-for idx in range(num_replies):
-    replies.append(st.text_input('Enter reply  # {}:'.format(len(replies) + 1)))
-    score_containers.append(st.empty())
-    score_containers[-1].text('-')
+replies_text_area = st.text_area('Enter replies (one per line):', height=275)
 
 recompute_button = st.button('Compute scores')
 
 if recompute_button:
-    for idx in range(len(replies)):
-        if idx == 0:
-            continue
+    replies = replies_text_area.splitlines()
+
+    average_scores = []
+    for idx in range(1, len(replies)):
         scores = []
         for reply in replies[:idx][-num_context_replies:]:
             scores.append(string_similarity(reply, replies[idx]))
-        avg_score = np.mean(scores)
-        score_containers[idx].empty()
-        score_containers[idx].text('Average context score: ' + str(avg_score))
+        average_scores.append(np.mean(scores))
+
+    st.write('The average score for the entire dialog: ' + str(np.mean(average_scores)))
