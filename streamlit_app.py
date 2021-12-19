@@ -61,4 +61,8 @@ if recompute_button:
             scores.append(string_similarity(reply, replies[idx]))
         average_scores.append(np.mean(scores))
 
+    st.write('The total number of replies in the dialog: ' + str(len(average_scores)))
     st.write('The average score for the entire dialog: ' + str(np.mean(average_scores)))
+    st.write('The score standard deviation for the entire dialog: ' + str(np.std(average_scores)))
+    st.write('The minimum score for the entire dialog: ' + str(np.min(average_scores)))
+    st.write('The maximum score for the entire dialog: ' + str(np.max(average_scores)))
