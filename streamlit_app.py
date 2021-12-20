@@ -87,16 +87,16 @@ if recompute_button:
         for idx in range(min(len(average_scores), num_samples)):
             output = ''
             output += f'{idx + 1}.'
-            for reply in reply_batches[-idx - 1]:
+            for reply in reply_batches[sorted_indices][-idx - 1]:
                 output += f'\t{reply}\n\n'
-            output += f'\tAverage score: {average_scores[-idx - 1]}'
+            output += f'\tAverage score: {average_scores[sorted_indices][-idx - 1]}'
             st.write(output)
 
         st.write(f'#### The bottom {num_samples} conversation turns by score:')
         for idx in range(min(len(average_scores), num_samples)):
             output = ''
             output += f'{idx}.'
-            for reply in reply_batches[idx]:
+            for reply in reply_batches[sorted_indices][idx]:
                 output += f'\t{reply}\n\n'
-            output += f'\tAverage score: {average_scores[idx]}'
+            output += f'\tAverage score: {average_scores[sorted_indices][idx]}'
             st.write(output)
