@@ -44,6 +44,8 @@ num_samples = st.slider('Select the number of top/bottom conversation turns by s
 
 user_turn = st.radio('The user is ...', ('First', 'Second'))
 
+computation_type = st.radio('The computation will consider ...', ('Spok & user', 'User-only'))
+
 replies_text_area = st.text_area('Enter replies (one per line):', height=275)
 
 recompute_button = st.button('Compute scores')
@@ -53,22 +55,41 @@ if recompute_button:
 
     average_scores = []
     reply_batches = []
-    for idx in range(1, len(replies)):
-        # Remember: indexing is offset by 1
-        if user_turn == 'First' and idx % 2 != 0:
-            continue
-        if user_turn == 'Second' and idx % 2 == 0:
-            continue
+    if computation_type == 'Spok & user':
+        for idx in range(1, len(replies)):
+            # Remember: indexing is offset by 1
+            if user_turn == 'First' and idx % 2 != 0:
+                continue
+            if user_turn == 'Second' and idx % 2 == 0:
+                continue
 
-        current_scores = []
-        current_replies = []
-        for reply in replies[:idx][-num_context_replies:]:
-            current_replies.append(reply)
-            current_scores.append(string_similarity(reply, replies[idx]))
-        current_replies.append(replies[idx])
+            current_scores = []
+            current_replies = []
+            for reply in replies[:idx][-num_context_replies:]:
+                current_replies.append(reply)
+                current_scores.append(string_similarity(reply, replies[idx]))
+            current_replies.append(replies[idx])
 
-        average_scores.append(np.mean(current_scores))
-        reply_batches.append(current_replies)
+            average_scores.append(np.mean(current_scores))
+            reply_batches.append(current_replies)
+
+    elif computation_type == 'User-only':
+        for idx in range(1, len(replies)):
+            # Remember: indexing is offset by 1
+            if user_turn == 'First' and idx % 2 != 0:
+                continue
+            if user_turn == 'Second' and idx % 2 == 0:
+                continue
+
+            current_scores = []
+            current_replies = []
+            for reply in replies[:idx][-2 * num_context_replies::2]:
+                current_replies.append(reply)
+                current_scores.append(string_similarity(reply, replies[idx]))
+            current_replies.append(replies[idx])
+
+            average_scores.append(np.mean(current_scores))
+            reply_batches.append(current_replies)
 
     st.write('## General statistics')
     st.write(f'The total number of turns in the dialog: **{len(average_scores)}**')
