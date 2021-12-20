@@ -70,6 +70,7 @@ if recompute_button:
         average_scores.append(np.mean(current_scores))
         reply_batches.append(current_replies)
 
+    st.write('## General statistics')
     st.write('The total number of turns in the dialog: ' + str(len(average_scores)))
     st.write('The average score for the entire dialog: ' + str(np.mean(average_scores)))
     st.write('The score standard deviation for the entire dialog: ' + str(np.std(average_scores)))
@@ -77,6 +78,7 @@ if recompute_button:
     st.write('The maximum score for the entire dialog: ' + str(np.max(average_scores)))
 
     if num_samples > 0:
+        st.write('## Top/bottom conversation turns by score')
         average_scores = np.array(average_scores)
         reply_batches = np.array(reply_batches)
 
@@ -84,9 +86,9 @@ if recompute_button:
         st.write(f'The top {num_samples} conversation turns by score:')
         for idx in range(min(len(average_scores), num_samples)):
             output = ''
-            output += f'{idx}.'
+            output += f'{idx + 1}.'
             for reply in reply_batches[-idx - 1]:
-                output += f'\t{reply}\n'
+                output += f'\t{reply}\n\n'
             output += f'\t{average_scores[-idx - 1]}'
             st.write(output)
 
