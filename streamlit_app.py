@@ -39,6 +39,9 @@ with st.spinner(text='In progress'):
 num_context_replies = st.slider('Select the number of previous replies considered for computing the context score:',
                                 1, 20, 1)
 
+num_samples = st.slider('Select the number of top/bottom conversation turns by score to show after computation:',
+                        0, 100, 3)
+
 user_turn = st.radio('The user is ...', ('First', 'Second'))
 
 replies_text_area = st.text_area('Enter replies (one per line):', height=275)
@@ -49,6 +52,7 @@ if recompute_button:
     replies = replies_text_area.splitlines()
 
     average_scores = []
+    reply_batches = []
     for idx in range(1, len(replies)):
         # Remember: indexing is offset by 1
         if user_turn == 'First' and idx % 2 != 0:
@@ -56,13 +60,41 @@ if recompute_button:
         if user_turn == 'Second' and idx % 2 == 0:
             continue
 
-        scores = []
+        current_scores = []
+        current_replies = []
         for reply in replies[:idx][-num_context_replies:]:
-            scores.append(string_similarity(reply, replies[idx]))
-        average_scores.append(np.mean(scores))
+            current_replies.append(reply)
+            current_scores.append(string_similarity(reply, replies[idx]))
+        current_replies.append(replies[idx])
+
+        average_scores.append(np.mean(current_scores))
+        reply_batches.append(current_replies)
 
     st.write('The total number of replies in the dialog: ' + str(len(average_scores)))
     st.write('The average score for the entire dialog: ' + str(np.mean(average_scores)))
     st.write('The score standard deviation for the entire dialog: ' + str(np.std(average_scores)))
     st.write('The minimum score for the entire dialog: ' + str(np.min(average_scores)))
     st.write('The maximum score for the entire dialog: ' + str(np.max(average_scores)))
+
+    if num_samples > 0:
+        average_scores = np.array(average_scores)
+        reply_batches = np.array(reply_batches)
+
+        sorted_indices = np.argsort(average_scores)
+        st.write(f'The top {num_samples} conversation turns by score:')
+        output = ''
+        for idx in range(min(len(average_scores), num_samples)):
+            output += f'{idx}.'
+            for reply in reply_batches[-idx - 1]:
+                output += f'\t{reply}\n'
+            output += f'\t{average_scores[-idx - 1]}'
+        st.write(output)
+
+        st.write(f'The bottom {num_samples} conversation turns by score:')
+        output = ''
+        for idx in range(min(len(average_scores), num_samples)):
+            output += f'{idx}.'
+            for reply in reply_batches[idx]:
+                output += f'\t{reply}\n'
+            output += f'\t{average_scores[idx]}'
+        st.write(output)
