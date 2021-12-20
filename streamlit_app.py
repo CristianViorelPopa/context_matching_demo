@@ -76,9 +76,9 @@ if recompute_button:
     elif computation_type == 'User-only':
         for idx in range(1, len(replies)):
             # Remember: indexing is offset by 1
-            if user_turn == 'First' and idx % 2 != 0:
+            if user_turn == 'First' and idx % 2 != 0 and idx < 2:
                 continue
-            if user_turn == 'Second' and idx % 2 == 0:
+            if user_turn == 'Second' and idx % 2 == 0 and idx < 3:
                 continue
 
             current_scores = []
