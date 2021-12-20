@@ -83,7 +83,16 @@ if recompute_button:
 
             current_scores = []
             current_replies = []
-            for reply in replies[:idx][-2 * num_context_replies::2]:
+            if user_turn == 'First':
+                starting_index = -2 * num_context_replies
+            elif user_turn == 'Second':
+                starting_index = -2 * num_context_replies
+                if starting_index + idx < 0:
+                    starting_index = 1
+            else:
+                raise RuntimeError('User turn is not first or second')
+
+            for reply in replies[:idx][starting_index::2]:
                 current_replies.append(reply)
                 current_scores.append(string_similarity(reply, replies[idx]))
             current_replies.append(replies[idx])
